@@ -14,7 +14,10 @@ import Foundation
 import Smud
 
 public final class ChooseAccountContext: SessionContext {
-    public init() {
+    let smud: Smud
+    
+    public init(smud: Smud) {
+        self.smud = smud
     }
     
     public static var name = "chooseAccount"
@@ -27,18 +30,19 @@ public final class ChooseAccountContext: SessionContext {
         guard let email = args.scanWord(),
             Email.isValidEmail(email) else { return .retry(reason: "Invalid email address.") }
         
-        if let account = Account.with(email: email) {
+        if let account = smud.db.account(email: email) {
             session.account = account
-            return .next(context: PlayerNameContext())
+            return .next(context: PlayerNameContext(smud: smud))
         }
         
-        let account = Account()
+        let account = Account(smud: smud)
         account.email = email
-        account.modified = true
-        Account.addToIndexes(account: account)
+        account.scheduleForSaving()
+        smud.db.addToIndexes(account: account)
+        
         session.account = account
         
         session.send("Confirmation email has been sent to your email address.")
-        return .next(context: ConfirmationCodeContext())
+        return .next(context: ConfirmationCodeContext(smud: smud))
     }
 }

@@ -11,9 +11,15 @@
 //
 
 import Foundation
+import Smud
 
 final class MainMenuContext: SessionContext {
     static var name = "mainMenu"
+    let smud: Smud
+    
+    init(smud: Smud) {
+        self.smud = smud
+    }
     
     func greet(session: Session) {
         guard let name = session.player?.name else { return }
@@ -30,7 +36,7 @@ final class MainMenuContext: SessionContext {
         }
         switch optionIndex {
         case 1:
-            return .next(context: GameContext())
+            return .next(context: GameContext(smud: smud))
         case 0:
             session.send("Goodbye!")
             return .closeSession

@@ -14,9 +14,7 @@ import Foundation
 
 public protocol SessionContext {
     static var name: String { get }
-    
-    init()
-    
+        
     func greet(session: Session)
     func processResponse(args: Arguments, session: Session) throws -> ContextAction
 }

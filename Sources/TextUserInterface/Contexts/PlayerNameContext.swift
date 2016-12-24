@@ -15,12 +15,17 @@ import Smud
 
 final class PlayerNameContext: SessionContext {
     static var name = "playerName"
+    let smud: Smud
+    
+    init(smud: Smud) {
+        self.smud = smud
+    }
     
     func greet(session: Session) {
         defer { session.sendPrompt("Please choose a name for your character: ") }
         
         guard let accountId = session.account?.accountId else { return }
-        let players = Player.with(accountId: accountId)
+        let players = smud.db.players(accountId: accountId)
         let playerNames = players.map { v in v.name }.sorted()
         guard !playerNames.isEmpty else { return }
         
@@ -35,38 +40,36 @@ final class PlayerNameContext: SessionContext {
             return .retry(reason: nil)
         }
         
-        let badCharacters = Config.playerNameAllowedCharacters.inverted
+        let badCharacters = smud.playerNameAllowedCharacters.inverted
         guard lowercasedName.rangeOfCharacter(from: badCharacters) == nil else {
-            return .retry(reason: Config.playerNameInvalidCharactersMessage)
+            return .retry(reason: smud.playerNameInvalidCharactersMessage)
         }
         
         let name = lowercasedName.capitalized
         let nameLength = name.characters.count
-        guard nameLength >= Config.playerNameLength.lowerBound else {
+        guard nameLength >= smud.playerNameLength.lowerBound else {
             return .retry(reason: "Character name is too short")
         }
-        guard nameLength <= Config.playerNameLength.upperBound else {
+        guard nameLength <= smud.playerNameLength.upperBound else {
             return .retry(reason: "Character name is too long")
         }
         
-        if let player = Player.with(name: name) {
+        if let player = smud.db.player(name: name) {
             guard player.account == session.account else {
                 return .retry(reason: "Character named '\(name)' already exists. Please choose a different name.")
             }
             session.player = player
         } else {
             guard let account = session.account else {
-                return .next(context: ChooseAccountContext())
+                return .next(context: ChooseAccountContext(smud: smud))
             }
             
-            let player = Player()
-            player.account = account
-            player.name = name
-            player.modified = true
-            Player.addToIndexes(player: player)
+            let player = Player(name: name, account: account, smud: smud)
+            player.scheduleForSaving()
+            smud.db.addToIndexes(player: player)
             session.player = player
         }
         
-        return .next(context: MainMenuContext())
+        return .next(context: MainMenuContext(smud: smud))
     }
 }

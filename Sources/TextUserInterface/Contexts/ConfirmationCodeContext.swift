@@ -11,9 +11,15 @@
 //
 
 import Foundation
+import Smud
 
 final class ConfirmationCodeContext: SessionContext {
     static var name = "confirmationCode"
+    let smud: Smud
+    
+    init(smud: Smud) {
+        self.smud = smud
+    }
     
     func greet(session: Session) {
         session.sendPrompt("Please enter the confirmation code: ")
@@ -26,6 +32,6 @@ final class ConfirmationCodeContext: SessionContext {
         
         session.send("Your account has been succesfully created.")
         
-        return .next(context: PlayerNameContext())
+        return .next(context: PlayerNameContext(smud: smud))
     }
 }

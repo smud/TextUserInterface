@@ -15,6 +15,11 @@ import Smud
 
 final class GameContext: SessionContext {
     static var name = "game"
+    let smud: Smud
+    
+    init(smud: Smud) {
+        self.smud = smud
+    }
     
     func greet(session: Session) {
         session.sendPrompt("> ")
@@ -24,7 +29,7 @@ final class GameContext: SessionContext {
         
         guard let _ /*player*/ = session.player else {
             print("Session doesn't have an associated player")
-            return .retry(reason: Config.internalErrorMessage)
+            return .retry(reason: smud.internalErrorMessage)
         }
 //        Commands.router.process(args: args,
 //                                player: player,
