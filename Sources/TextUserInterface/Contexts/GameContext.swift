@@ -12,6 +12,7 @@
 
 import Foundation
 import Smud
+import StringUtils
 
 final class GameContext: SessionContext {
     static var name = "game"
@@ -27,20 +28,20 @@ final class GameContext: SessionContext {
     
     func processResponse(args: Arguments, session: Session) throws -> ContextAction {
         
-        guard let _ /*player*/ = session.player else {
+        guard let player = session.player else {
             print("Session doesn't have an associated player")
             return .retry(reason: smud.internalErrorMessage)
         }
-//        Commands.router.process(args: args,
-//                                player: player,
-//                                connection: connection,
-//                                unknownCommand: { context in
-//            session.send("Unknown command: \(context.args.scanWord().unwrapOptional)")
-//        },
-//                                partialMatch: { context in
-//            session.send("Warning! Part of your input was ignored: \(context.args.scanRestOfString().unwrapOptional)")
-//                                    
-//        })
+        
+        let router = session.textUserInterface.router
+        router.process(args: args, player: player, session: session,
+            unknownCommand: { context in
+                context.send("Unknown command: \(context.args.scanWord().unwrapOptional)")
+            },
+            partialMatch: { context in
+                context.send("Warning! Part of your input was ignored: \(context.args.scanRestOfString().unwrapOptional)")
+            }
+        )
         
         return .retry(reason: nil)
     }

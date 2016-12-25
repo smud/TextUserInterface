@@ -13,6 +13,7 @@
 import Smud
 
 public protocol Session: class {
+    var textUserInterface: TextUserInterface { get }
     var context: SessionContext? { get set }
 
     var account: Account? { get set }
