@@ -26,7 +26,7 @@ public final class ChooseAccountContext: SessionContext {
         session.sendPrompt("Please enter your email address: ")
     }
     
-    public func processResponse(args: Arguments, session: Session) throws -> ContextAction {
+    public func processResponse(args: Scanner, session: Session) throws -> ContextAction {
         guard let email = args.scanWord(),
             Email.isValidEmail(email) else { return .retry(reason: "Invalid email address.") }
         

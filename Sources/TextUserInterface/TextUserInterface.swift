@@ -19,10 +19,10 @@ public class TextUserInterface {
     }
     
     public func registerCommands() {
-        InfoCommands.register(with: router)
+        InfoCommands().register(with: router)
         //MovementCommands.register(with: router)
         //AdminCommands.register(with: router)
-        //InstanceCommands.register(with: router)
+        InstanceCommands().register(with: router)
         //RoomEditorCommands.register(with: router)
         //AreaEditorCommands.register(with: router)
     }

@@ -30,8 +30,8 @@ final class MainMenuContext: SessionContext {
             "What would you like to do? ")
     }
     
-    func processResponse(args: Arguments, session: Session) -> ContextAction {
-        guard let optionIndex = args.scanInt() else {
+    func processResponse(args: Scanner, session: Session) -> ContextAction {
+        guard let optionIndex = args.scanInteger() else {
             return .retry(reason: "Please enter a number.")
         }
         switch optionIndex {

@@ -25,7 +25,7 @@ final class ConfirmationCodeContext: SessionContext {
         session.sendPrompt("Please enter the confirmation code: ")
     }
     
-    func processResponse(args: Arguments, session: Session) -> ContextAction {
+    func processResponse(args: Scanner, session: Session) -> ContextAction {
         guard let code = args.scanWord(), code == "123" else {
             return .retry(reason: "Ivalid confirmation code.")
         }

@@ -14,17 +14,17 @@
 import Foundation
 
 class InfoCommands {
-    static func register(with router: CommandRouter) {
+    func register(with router: CommandRouter) {
         router[""] = refreshPrompt
         router["look"] = look
     }
     
-    static func refreshPrompt(context: CommandContext) -> CommandAction {
+    func refreshPrompt(context: CommandContext) -> CommandAction {
         return .accept
     }
     
-    static func look(context: CommandContext) -> CommandAction {
-        guard let room = context.player.room else {
+    func look(context: CommandContext) -> CommandAction {
+        guard let room = context.creature.room else {
             context.send("You aren't standing in any room.")
             return .accept
         }

@@ -26,7 +26,7 @@ final class GameContext: SessionContext {
         session.sendPrompt("> ")
     }
     
-    func processResponse(args: Arguments, session: Session) throws -> ContextAction {
+    func processResponse(args: Scanner, session: Session) throws -> ContextAction {
         
         guard let player = session.player else {
             print("Session doesn't have an associated player")

@@ -35,7 +35,7 @@ final class PlayerNameContext: SessionContext {
         }
     }
 
-    func processResponse(args: Arguments, session: Session) throws -> ContextAction {
+    func processResponse(args: Scanner, session: Session) throws -> ContextAction {
         guard let lowercasedName = args.scanWord()?.lowercased() else {
             return .retry(reason: nil)
         }
@@ -64,7 +64,7 @@ final class PlayerNameContext: SessionContext {
                 return .next(context: ChooseAccountContext(smud: smud))
             }
             
-            let player = Player(name: name, account: account, smud: smud)
+            let player = Player(name: name, account: account, world: smud.db.world)
             player.scheduleForSaving()
             smud.db.addToIndexes(player: player)
             session.player = player

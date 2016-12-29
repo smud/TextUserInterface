@@ -16,7 +16,7 @@ public protocol SessionContext {
     static var name: String { get }
         
     func greet(session: Session)
-    func processResponse(args: Arguments, session: Session) throws -> ContextAction
+    func processResponse(args: Scanner, session: Session) throws -> ContextAction
 }
 
 func ==(lhs: SessionContext, rhs: SessionContext) -> Bool {
