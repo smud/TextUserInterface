@@ -19,8 +19,7 @@ class MovementCommands {
 
     func go(context: CommandContext) -> CommandAction {
         guard context.hasArgs else {
-            return .showUsage("Usage: go #area.room:instance\n" +
-                "Area and room can be omitted.")
+            return .showUsage("Usage: go #area.room:instance")
         }
         
         guard let room = context.scanRoom() else { return .accept }

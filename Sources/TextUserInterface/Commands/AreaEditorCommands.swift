@@ -13,23 +13,23 @@
 import Foundation
 
 class AreaEditorCommands {
-    func register(with router: CommandRouter) {
-        router["area list"] = areaList
-        //router["area new"] = areaNew
-        //router["area delete"] = areaDelete
-        //router["area rename"] = areaRename
-        router["area"] = area
-    }
-    
-    func areaList(context: CommandContext) -> CommandAction {
-        context.send("List of areas:")
-        let areas = context.world.areasById.sorted { lhs, rhs in
-            lhs.value.title.caseInsensitiveCompare(rhs.value.title) == .orderedAscending }
-        let areaList = areas.map { v in "  #\(v.value.id) \(v.value.title)" }.joined(separator: "\n")
-        context.send(areaList.isEmpty ? "  none." : areaList)
-        return .accept
-    }
-    
+//    func register(with router: CommandRouter) {
+//        router["area list"] = areaList
+//        //router["area new"] = areaNew
+//        //router["area delete"] = areaDelete
+//        //router["area rename"] = areaRename
+//        router["area"] = area
+//    }
+//    
+//    func areaList(context: CommandContext) -> CommandAction {
+//        context.send("List of areas:")
+//        let areas = context.world.areasById.sorted { lhs, rhs in
+//            lhs.value.title.caseInsensitiveCompare(rhs.value.title) == .orderedAscending }
+//        let areaList = areas.map { v in "  #\(v.value.id) \(v.value.title)" }.joined(separator: "\n")
+//        context.send(areaList.isEmpty ? "  none." : areaList)
+//        return .accept
+//    }
+//    
 //    func areaNew(context: CommandContext) throws -> CommandAction {
 //        guard let tag = context.args.scanTag(), !tag.isQualified,
 //            let areaName = context.args.scanRestOfString(), !areaName.isEmpty else {
@@ -117,12 +117,12 @@ class AreaEditorCommands {
 //        return .accept
 //    }
     
-    func area(context: CommandContext) -> CommandAction {
-        var result = ""
-        if let subcommand = context.args.scanWord() {
-            result += "Unknown subcommand: \(subcommand)\n"
-        }
-        result += "Available subcommands: delete, list, new, rename"
-        return .showUsage(result)
-    }
+//    func area(context: CommandContext) -> CommandAction {
+//        var result = ""
+//        if let subcommand = context.args.scanWord() {
+//            result += "Unknown subcommand: \(subcommand)\n"
+//        }
+//        result += "Available subcommands: delete, list, new, rename"
+//        return .showUsage(result)
+//    }
 }
