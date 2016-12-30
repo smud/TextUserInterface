@@ -11,6 +11,7 @@
 //
 
 import Foundation
+import Smud
 
 class MovementCommands {
     func register(with router: CommandRouter) {
@@ -22,13 +23,25 @@ class MovementCommands {
             return .showUsage("Usage: go #area.room:instance")
         }
         
-        guard let room = context.scanRoom() else { return .accept }
+        let chosenRoom: Room
         
-        context.player?.room = room
+        switch context.scanArgument(type: [.areaInstance, .room]) {
+        case .room(let room):
+            chosenRoom = room
+        case .areaInstance(let areaInstance):
+            guard let room = areaInstance.roomsById.first?.value else {
+                context.send("Area instance #\(areaInstance.area.id):\(areaInstance.index) contains no rooms")
+                return .accept
+            }
+            chosenRoom = room
+        default: return .accept
+        }
+        
+        context.player?.room = chosenRoom
      
-        let area = room.areaInstance.area
+        let area = chosenRoom.areaInstance.area
         
-        context.send("Relocated to #\(area.id).\(room.id):\(room.areaInstance.index)")
+        context.send("Relocated to #\(area.id).\(chosenRoom.id):\(chosenRoom.areaInstance.index)")
         return .accept
     }
 }

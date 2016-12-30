@@ -48,18 +48,24 @@ public class CommandContext {
         self.userCommand = userCommand
     }
     
-    func argument(type: GameObjectType, optional: Bool = false) -> GameObject {
+    func scanArgument(type: GameObjectType, optional: Bool = false) -> GameObject {
+        let originalScanLocation = args.scanLocation
+        
         if type.contains(.room) {
             if case .room(let room) = scanRoomArgument(optional: optional) {
                 return .room(room)
             }
         }
+        args.scanLocation = originalScanLocation
+        
         if type.contains(.areaInstance) {
             if case .areaInstance(let areaInstance) = scanAreaInstanceArgument(optional: optional) {
                 return .areaInstance(areaInstance)
             }
         }
-        send("Nothing found.")
+        args.scanLocation = originalScanLocation
+        
+        send("Nothing found by this name.")
         return .none
     }
     
