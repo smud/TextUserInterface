@@ -45,12 +45,12 @@ public class CommandRouter {
     }
 
 
-    func process(args: Scanner, player: Player, session: Session, unknownCommand: UnknownCommandHandler, partialMatch: PartialMatchHandler) {
+    func process(args: Scanner, creature: Creature, session: Session, unknownCommand: UnknownCommandHandler, partialMatch: PartialMatchHandler) {
         
         let originalScanLocation = args.scanLocation
         for path in paths {
             if let userCommand = path.command.fetchFrom(args) {
-                let context = CommandContext(args: args, creature: player, session: session, userCommand: userCommand)
+                let context = CommandContext(args: args, creature: creature, session: session, userCommand: userCommand)
                 do {
                     switch try path.handler(context) {
                     case .accept:
@@ -72,7 +72,7 @@ public class CommandRouter {
             }
             args.scanLocation = originalScanLocation
         }
-        let context = CommandContext(args: args, creature: player, session: session, userCommand: "")
+        let context = CommandContext(args: args, creature: creature, session: session, userCommand: "")
         unknownCommand(context)
     }
 }

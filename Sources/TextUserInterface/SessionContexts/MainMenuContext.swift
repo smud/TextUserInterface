@@ -22,7 +22,7 @@ final class MainMenuContext: SessionContext {
     }
     
     func greet(session: Session) {
-        guard let name = session.player?.name else { return }
+        guard let name = session.creature?.name else { return }
         session.sendPrompt(
             "Welcome \(name)!\n" +
             "1. Play\n" +

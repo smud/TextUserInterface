@@ -14,15 +14,20 @@ import Foundation
 
 public class TextUserInterface {
     public let router = CommandRouter()
+    
+    let infoCommands = InfoCommands()
+    let movementCommands = MovementCommands()
+    let adminCommands = AdminCommands()
+    let instanceCommands = InstanceCommands()
 
     public init() {
     }
     
     public func registerCommands() {
-        InfoCommands().register(with: router)
-        MovementCommands().register(with: router)
-        AdminCommands().register(with: router)
-        InstanceCommands().register(with: router)
+        infoCommands.register(with: router)
+        movementCommands.register(with: router)
+        adminCommands.register(with: router)
+        instanceCommands.register(with: router)
         //RoomEditorCommands.register(with: router)
         //AreaEditorCommands().register(with: router)
     }

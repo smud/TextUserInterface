@@ -16,6 +16,12 @@ import Smud
 class MovementCommands {
     func register(with router: CommandRouter) {
         router["go"] = go
+        router["north"] = { return self.move(.north, $0) }
+        router["east"] = { return self.move(.east, $0) }
+        router["south"] = { return self.move(.south, $0) }
+        router["west"] = { return self.move(.west, $0) }
+        router["up"] = { return self.move(.up, $0) }
+        router["down"] = { return self.move(.down, $0) }
     }
 
     func go(context: CommandContext) -> CommandAction {
@@ -37,11 +43,33 @@ class MovementCommands {
         default: return .accept
         }
         
-        context.player?.room = chosenRoom
+        context.creature.room = chosenRoom
      
         let area = chosenRoom.areaInstance.area
         
         context.send("Relocated to #\(area.id).\(chosenRoom.id):\(chosenRoom.areaInstance.index)")
+        return .accept
+    }
+
+    func move(_ direction: Direction, _ context: CommandContext) -> CommandAction {
+        return move(direction: direction, context: context)
+    }
+
+    func move(direction: Direction, context: CommandContext) -> CommandAction {
+        
+        guard let room = context.room else {
+            context.send("You aren't standing in any room.")
+            return .accept
+        }
+        
+        if let room = room.resolveExit(direction: direction) {
+            //context.send("You move \(direction).")
+            context.creature.room = room
+            context.creature.look()
+        } else {
+            context.send("You can't move in that direction.")
+        }
+        
         return .accept
     }
 }

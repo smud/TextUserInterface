@@ -58,7 +58,8 @@ final class PlayerNameContext: SessionContext {
             guard player.account == session.account else {
                 return .retry(reason: "Character named '\(name)' already exists. Please choose a different name.")
             }
-            session.player = player
+            player.textUserInterfaceData.sessions.append(session)
+            session.creature = player
         } else {
             guard let account = session.account else {
                 return .next(context: ChooseAccountContext(smud: smud))
@@ -67,7 +68,8 @@ final class PlayerNameContext: SessionContext {
             let player = Player(name: name, account: account, world: smud.db.world)
             player.scheduleForSaving()
             smud.db.addToIndexes(player: player)
-            session.player = player
+            session.creature = player
+            player.textUserInterfaceData.sessions = [session]
         }
         
         return .next(context: MainMenuContext(smud: smud))

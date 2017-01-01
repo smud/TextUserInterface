@@ -28,13 +28,13 @@ final class GameContext: SessionContext {
     
     func processResponse(args: Scanner, session: Session) throws -> ContextAction {
         
-        guard let player = session.player else {
-            print("Session doesn't have an associated player")
+        guard let creature = session.creature else {
+            print("Session doesn't have an associated creature")
             return .retry(reason: smud.internalErrorMessage)
         }
         
         let router = session.textUserInterface.router
-        router.process(args: args, player: player, session: session,
+        router.process(args: args, creature: creature, session: session,
             unknownCommand: { context in
                 context.send("Unknown command: \(context.args.scanWord().unwrapOptional)")
             },

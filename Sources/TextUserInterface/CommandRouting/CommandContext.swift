@@ -34,8 +34,11 @@ public class CommandContext {
     let session: Session
     let userCommand: String
 
-    var player: Player? { return creature as? Player }
-    var mobile: Mobile? { return creature as? Mobile }
+    // Too easy to use accidentally instead of creature,
+    // it's better to cast explicitly where player
+    // or mobile are really needed.
+    //var player: Player? { return creature as? Player }
+    //var mobile: Mobile? { return creature as? Mobile }
     var world: World { return creature.world }
     var room: Room? { return creature.room }
     var area: Area? { return areaInstance?.area }
@@ -70,8 +73,6 @@ public class CommandContext {
     }
     
     func send(_ items: Any..., separator: String = "", terminator: String = "\n") {
-        // TODO: send text to all player's sessions, not only this specific one
-        // TODO: use creature.send()
-        session.send(items: items, separator: separator, terminator: terminator)
+        creature.send(items: items, separator: separator, terminator: terminator)
     }
 }

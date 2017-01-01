@@ -17,7 +17,7 @@ public protocol Session: class {
     var context: SessionContext? { get set }
 
     var account: Account? { get set }
-    var player: Player? { get set }
+    var creature: Creature? { get set }
 
     func send(items: [Any], separator: String, terminator: String, isPrompt: Bool)
 }

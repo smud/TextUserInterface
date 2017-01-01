@@ -24,12 +24,7 @@ class InfoCommands {
     }
     
     func look(context: CommandContext) -> CommandAction {
-        guard let room = context.creature.room else {
-            context.send("You aren't standing in any room.")
-            return .accept
-        }
-        
-        context.send(room.title)
+        context.creature.look()
         
         return .accept
     }
