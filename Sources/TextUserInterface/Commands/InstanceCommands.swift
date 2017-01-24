@@ -28,7 +28,7 @@ class InstanceCommands {
         }
 
         context.send("List of #\(area.id) instances:")
-        let instances = area.instances.keys
+        let instances = area.instancesByIndex.keys
             .sorted()
             .map { String($0) }
             .joined(separator: ", ")
@@ -51,7 +51,7 @@ class InstanceCommands {
         
         let areaInstance: AreaInstance
         if let instanceIndex = link.instance {
-            guard nil == area.instances[instanceIndex] else {
+            guard nil == area.instancesByIndex[instanceIndex] else {
                 context.send("Instance \(link) already exists.")
                 return .accept
             }
@@ -59,7 +59,7 @@ class InstanceCommands {
                 area.nextInstanceIndex += 1
             }
             areaInstance = AreaInstance(area: area, index: instanceIndex)
-            area.instances[instanceIndex] = areaInstance
+            area.instancesByIndex[instanceIndex] = areaInstance
         } else {
             // Find next free slot
             areaInstance = area.createInstance()

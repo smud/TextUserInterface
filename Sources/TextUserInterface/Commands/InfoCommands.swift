@@ -17,6 +17,7 @@ class InfoCommands {
     func register(with router: CommandRouter) {
         router[""] = refreshPrompt
         router["look"] = look
+        router["map"] = map
     }
     
     func refreshPrompt(context: CommandContext) -> CommandAction {
@@ -25,6 +26,17 @@ class InfoCommands {
     
     func look(context: CommandContext) -> CommandAction {
         context.creature.look()
+        
+        return .accept
+    }
+
+    func map(context: CommandContext) -> CommandAction {
+        guard let areaMap = context.areaInstance?.areaMap else {
+            context.send("This area has no map.")
+            return .accept
+        }
+        
+        
         
         return .accept
     }

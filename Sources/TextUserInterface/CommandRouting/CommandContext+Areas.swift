@@ -53,12 +53,12 @@ extension CommandContext {
             }
             
             if let instanceIndex = link.instance {
-                guard let areaInstance = area.instances[instanceIndex] else {
+                guard let areaInstance = area.instancesByIndex[instanceIndex] else {
                     return .instanceDoesNotExist(instance: instanceIndex)
                 }
                 return .areaInstance(areaInstance)
             } else {
-                guard let areaInstance = area.instances.first?.value else {
+                guard let areaInstance = area.instancesByIndex.first?.value else {
                     return .areaHasNoInstances
                 }
                 return .areaInstance(areaInstance)
