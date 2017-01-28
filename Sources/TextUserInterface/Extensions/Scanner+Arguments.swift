@@ -19,6 +19,11 @@ extension Scanner {
         return scanUpToCharacters(from: CharacterSet.whitespacesAndNewlines)
     }
     
+    @discardableResult
+    public func skipWord() -> Bool {
+        return scanWord() != nil
+    }
+    
     public func scanWords() -> [String] {
         var words = [String]()
         while let word = scanWord() {

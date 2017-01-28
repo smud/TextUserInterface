@@ -38,7 +38,9 @@ class InfoCommands {
             return .accept
         }
         
-        
+        return .accept
+    }
+    
     func exits(context: CommandContext) -> CommandAction {
         guard let room = context.room else {
             context.send("You aren't standing in any room.")
