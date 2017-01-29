@@ -47,8 +47,8 @@ class InfoCommands {
             return .accept
         }
       
-        for direction in room.exits.keys {
-            guard let neighborRoom = room.resolveExit(direction: direction) else { continue }
+        for (direction, link) in room.orderedExits {
+            guard let neighborRoom = room.resolveLink(link: link) else { continue }
             let directionName = direction.rawValue.capitalizingFirstLetter()
             context.send("\(directionName): \(neighborRoom.title)")
         }
