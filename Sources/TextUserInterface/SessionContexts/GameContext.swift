@@ -23,7 +23,8 @@ final class GameContext: SessionContext {
     }
     
     func greet(session: Session) {
-        session.sendPrompt("> ")
+        let prompt = makePrompt(session: session)
+        session.sendPrompt(prompt)
     }
     
     func processResponse(args: Scanner, session: Session) throws -> ContextAction {
@@ -44,5 +45,30 @@ final class GameContext: SessionContext {
         )
         
         return .retry(reason: nil)
+    }
+    
+    private func makePrompt(session: Session) -> String {
+        var prompt = ""
+
+        if let creature = session.creature {
+            
+            if let room = creature.room {
+                prompt += exits(room: room)
+            }
+            
+        }
+        
+        prompt += "> "
+        return prompt
+    }
+    
+    private func exits(room: Room) -> String {
+        var result = "Exits:"
+        
+        for direction in room.orderedDirections {
+            result += direction.abbreviated.capitalizingFirstLetter()
+        }
+        
+        return result
     }
 }
