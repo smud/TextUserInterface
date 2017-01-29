@@ -33,11 +33,18 @@ class InfoCommands {
     }
 
     func map(context: CommandContext) -> CommandAction {
+        guard let room = context.room else {
+            context.send("You aren't standing in any room.")
+            return .accept
+        }
+        
         guard let areaMap = context.areaInstance?.areaMap else {
             context.send("This area has no map.")
             return .accept
         }
         
+        print(areaMap.fragment(near: room, width: 100, height: 100))
+            
         return .accept
     }
     
