@@ -12,6 +12,6 @@
 
 import Foundation
 
-class TextUserInterfaceData {
+class CreatureData {
     var sessions = [Session]()
 }

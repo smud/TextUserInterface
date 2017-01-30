@@ -14,12 +14,12 @@ import Foundation
 import Smud
 
 extension Creature {
-    var textUserInterfaceData: TextUserInterfaceData {
-        let id = ObjectIdentifier(TextUserInterfaceData.self)
-        if let data = pluginsData[id] as? TextUserInterfaceData {
+    var textUserInterfaceData: CreatureData {
+        let id = ObjectIdentifier(CreatureData.self)
+        if let data = pluginsData[id] as? CreatureData {
             return data
         } else {
-            let data = TextUserInterfaceData()
+            let data = CreatureData()
             pluginsData[id] = data
             return data
         }
