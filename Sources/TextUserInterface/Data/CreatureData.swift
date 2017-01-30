@@ -11,7 +11,8 @@
 //
 
 import Foundation
+import Smud
 
-class CreatureData {
+final class CreatureData: PluginData {
     var sessions = [Session]()
 }

@@ -15,14 +15,7 @@ import Smud
 
 extension Creature {
     var textUserInterfaceData: CreatureData {
-        let id = ObjectIdentifier(CreatureData.self)
-        if let data = pluginsData[id] as? CreatureData {
-            return data
-        } else {
-            let data = CreatureData()
-            pluginsData[id] = data
-            return data
-        }
+        return pluginData(id: ObjectIdentifier(CreatureData.self))
     }
     
     func look() {
