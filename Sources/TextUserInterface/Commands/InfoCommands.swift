@@ -38,12 +38,12 @@ class InfoCommands {
             return .accept
         }
         
-        guard let areaMap = context.areaInstance?.areaMap else {
+        guard let map = context.areaInstance?.textUserInterfaceData.renderedAreaMap else {
             context.send("This area has no map.")
             return .accept
         }
         
-        print(areaMap.fragment(near: room, width: 100, height: 100))
+        print(map.fragment(near: room, width: 100, height: 100))
             
         return .accept
     }

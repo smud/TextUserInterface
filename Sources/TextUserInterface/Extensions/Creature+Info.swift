@@ -14,9 +14,7 @@ import Foundation
 import Smud
 
 extension Creature {
-    var textUserInterfaceData: CreatureData {
-        return pluginData(id: ObjectIdentifier(CreatureData.self))
-    }
+    var textUserInterfaceData: CreatureData { return pluginData() }
     
     func look() {
         guard let room = room else {

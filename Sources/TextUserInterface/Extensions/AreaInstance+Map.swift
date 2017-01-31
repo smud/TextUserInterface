@@ -1,5 +1,5 @@
 //
-// TextUserInterfaceData.swift
+// AreaInstance+Map.swift
 //
 // This source file is part of the SMUD open source project
 //
@@ -13,13 +13,6 @@
 import Foundation
 import Smud
 
-final class CreatureData: PluginData {
-    typealias Parent = Creature
-    var sessions = [Session]()
-    
-    weak var parent: Parent?
-    
-    init(parent: Parent) {
-        self.parent = parent
-    }
+extension AreaInstance {
+    var textUserInterfaceData: AreaInstanceData { return pluginData() }
 }
