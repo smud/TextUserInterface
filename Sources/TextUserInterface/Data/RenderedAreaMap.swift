@@ -22,11 +22,23 @@ class RenderedAreaMap {
     
     var version: Int?
 
+    let roomWidth = 3
+    let roomHeight = 1
+    let roomSpacingWidth = 1
+    let roomSpacingHeight = 1
+
     init(areaMap: AreaMap) {
         self.areaMap = areaMap
     }
+
+    public func fragment(near room: Room, playerRoom: Room? = nil, horizontalRooms: Int, verticalRooms: Int) -> String {
+        let width = roomWidth * horizontalRooms + roomSpacingWidth * (horizontalRooms + 1)
+        let height = roomHeight * verticalRooms + roomSpacingHeight * (verticalRooms + 1)
+
+        return fragment(near: room, playerRoom: playerRoom, width: width, height: height)
+    }
     
-    public func fragment(near room: Room, width: Int, height: Int) -> String {
+    public func fragment(near room: Room, playerRoom: Room? = nil, width: Int, height: Int) -> String {
         if version == nil || version != areaMap.version {
             render()
         }
@@ -36,22 +48,38 @@ class RenderedAreaMap {
         guard map.count > 0 && map[0].count > 0 else { return "" }
         
         let topLeftHalf = AreaMapPosition(width / 2, height / 2, 0)
-        let topRightHalf = AreaMapPosition(width, height, 0) - topLeftHalf
-        
+        let bottomRightHalf = AreaMapPosition(width, height, 0) - topLeftHalf
+
         let from = upperBound(roomCenter - topLeftHalf, AreaMapPosition(0, 0, roomCenter.plane))
-        let to = lowerBound(roomCenter + topRightHalf, AreaMapPosition(map[0].count, map.count, roomCenter.plane))
+        let to = lowerBound(roomCenter + bottomRightHalf, AreaMapPosition(map[0].count, map.count, roomCenter.plane))
         
-        var fragment = String()
-        fragment.reserveCapacity((to.x - from.x + /* for newline */ 1) * (to.y - from.y))
-        
+        var fragmentLines = [String]()
+
+        let playerRoomCenter = playerRoom != nil
+            ? renderedRoomCentersByRoom[playerRoom!]
+            : nil
         for y in from.y..<to.y {
-            fragment += String(map[y][from.x..<to.x])
-            if y != to.y - 1 {
-                fragment += "\n"
+            var line = ""
+            line.reserveCapacity(to.x - from.x)
+            line += String(map[y][from.x..<to.x])
+
+            if let playerRoomCenter = playerRoomCenter, playerRoomCenter.y == y {
+                let leftBracketPosition = playerRoomCenter.x - roomWidth / 2
+                let rightBracketPosition = playerRoomCenter.x + roomWidth / 2
+                if leftBracketPosition >= from.x && rightBracketPosition < to.x {
+                    let index = line.index(line.startIndex, offsetBy: leftBracketPosition - from.x)
+                    line.replaceSubrange(index...index, with: "(")
+                }
+                if rightBracketPosition >= from.x && rightBracketPosition < to.x {
+                    let index = line.index(line.startIndex, offsetBy: rightBracketPosition - from.x)
+                    line.replaceSubrange(index...index, with: ")")
+                }
             }
+
+            fragmentLines.append(line)
         }
         
-        return fragment
+        return fragmentLines.joined(separator: "\n")
     }
     
     func render() {
@@ -60,11 +88,7 @@ class RenderedAreaMap {
         mapsByPlane.removeAll()
         
         let fillCharacter: Character = " "
-        let roomWidth = 3
-        let roomHeight = 1
-        let roomSpacingWidth = 1
-        let roomSpacingHeight = 1
-        
+
         for (plane, range) in areaMap.rangesByPlane {
             let width = (roomWidth + roomSpacingWidth) * (range.to.x - range.from.x + 1)
             let height = roomHeight * (range.to.y - range.from.y + 1) + roomSpacingHeight * (range.to.y - range.from.y)
@@ -90,7 +114,7 @@ class RenderedAreaMap {
                     mapsByPlane[plane]![y + roomHeight].replaceSubrange(x..<(x + roomWidth), with: " | ".characters)
                 }
                 if room.exits[.up] != nil && room.exits[.down] != nil {
-                    mapsByPlane[plane]![y][x + roomWidth / 2] = "*"
+                    mapsByPlane[plane]![y][x + roomWidth / 2] = "%"
                 } else if room.exits[.up] != nil {
                     mapsByPlane[plane]![y][x + roomWidth / 2] = "^"
                 } else if room.exits[.down] != nil {
