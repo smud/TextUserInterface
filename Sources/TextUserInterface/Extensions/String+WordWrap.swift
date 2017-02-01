@@ -19,64 +19,88 @@ extension String {
         let columnWidth = (columnLines.map{ $0.characters.count }.max() ?? -rightMargin) + rightMargin
 
         var lines = [String]()
-        var currentLine = ""
-        var currentLineNumber = 0
-        var currentLineLength = 0
+
+        struct CurrentLine {
+            var content = ""
+            var length = 0
+            var number = 0
+            mutating func append(_ string: String, length: Int?) {
+                content += string
+                self.length += length ?? string.characters.count
+            }
+            mutating func advance() -> String {
+                defer { content = "" }
+                length = 0
+                number += 1
+                return content
+            }
+        }
+
+        struct CurrentWord {
+            var content = ""
+            mutating func eat(_ length: Int) -> String {
+                let index = content.index(content.startIndex, offsetBy: length)
+                defer { content = content[index..<content.endIndex] }
+                return content[content.startIndex..<index]
+            }
+            mutating func eatAll() -> String {
+                defer { content = "" }
+                return content
+            }
+        }
+
+        var currentLine = CurrentLine()
+        var currentWord = CurrentWord()
 
         let wordCharacterSet = CharacterSet.whitespacesAndNewlines.inverted
         let scanner = Scanner(string: self)
         scanner.charactersToBeSkipped = CharacterSet.whitespaces
 
         while !scanner.isAtEnd {
-            let firstWordInLine = currentLineLength == 0
-            if firstWordInLine && currentLineNumber < columnLines.count {
-                if currentLineNumber < columnLines.count {
-                    currentLine += columnLines[currentLineNumber].padding(toLength: columnWidth, withPad: " ", startingAt: 0)
-                } else {
-                    currentLine += String(repeating: " ", count: columnWidth)
-                }
-                currentLineLength = columnWidth
+            let firstWordInLine = currentLine.length == 0
+            if firstWordInLine && currentLine.number < columnLines.count {
+                let paddedColumn = columnLines[currentLine.number].padding(toLength: columnWidth, withPad: " ", startingAt: 0)
+                currentLine.append(paddedColumn, length: columnWidth)
             }
 
-            if scanner.skipString("\n") {
-                if currentLineLength > 0 {
-                    lines.append(currentLine)
+            if currentWord.content.isEmpty {
+                if scanner.skipString("\n") {
+                    lines.append(currentLine.advance())
+                    continue
+                }
+                
+                guard let word = scanner.scanCharacters(from:wordCharacterSet) else {
+                    assert(false)
+                    continue
+                }
+                currentWord.content = word
+            }
+
+            let wordLength = currentWord.content.characters.count
+
+            if currentLine.length + wordLength >= totalWidth {
+                if firstWordInLine {
+                    let remainingLength = totalWidth - currentLine.length
+                    currentLine.append(currentWord.eat(remainingLength), length: remainingLength)
                 }
 
-                currentLine = ""
-                currentLineLength = 0
-                currentLineNumber += 1
+                lines.append(currentLine.advance())
                 continue
             }
 
-            guard let word = scanner.scanCharacters(from:wordCharacterSet) else {
-                assert(false)
-                continue
+            if !firstWordInLine {
+                currentLine.append(" ", length: 1)
             }
 
-            let wordLength = word.characters.count
-            if currentLineLength == 0 || currentLineLength + wordLength < totalWidth {
-                if !firstWordInLine {
-                    currentLine += " "
-                    currentLineLength += 1
-                }
-                currentLine += word
-                currentLineLength += wordLength
-            } else if currentLineLength > 0 {
-                lines.append(currentLine)
-                currentLine = ""
-                currentLineLength = 0
-                currentLineNumber += 1
-            }
+            currentLine.append(currentWord.eatAll(), length: wordLength)
         }
 
-        if currentLineLength > 0 {
-            lines.append(currentLine)
-            currentLineNumber += 1
+        if currentLine.length > 0 {
+            lines.append(currentLine.advance())
         }
 
-        if (currentLineNumber < columnLines.count) {
-            lines += columnLines[currentLineNumber..<columnLines.count]
+        if (currentLine.number < columnLines.count) {
+            lines += columnLines[currentLine.number..<columnLines.count]
         }
 
         return lines.joined(separator: "\n")
