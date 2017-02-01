@@ -24,7 +24,7 @@ extension Creature {
 
         let map = room.areaInstance.textUserInterfaceData.renderedAreaMap?.fragment(near: room, playerRoom: room, horizontalRooms: 3, verticalRooms: 3) ?? ""
 
-        send((room.title + "\n\n" + room.description).wrapping(aroundTextColumn: map, totalWidth: 80, rightMargin: 1, bottomMargin: 1))
+        send((room.title + "\n\n" + room.description).wrapping(aroundTextColumn: map, totalWidth: 76, rightMargin: 1, bottomMargin: 1))
     }
     
     func send(items: [Any], separator: String = "", terminator: String = "", isPrompt: Bool = false) {
