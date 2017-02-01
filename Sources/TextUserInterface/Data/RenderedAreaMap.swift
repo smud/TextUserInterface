@@ -59,7 +59,7 @@ class RenderedAreaMap {
             ? renderedRoomCentersByRoom[playerRoom!]
             : nil
         for y in from.y..<to.y {
-            var line = String()
+            var line = ""
             line.reserveCapacity(to.x - from.x)
             line += String(map[y][from.x..<to.x])
 
@@ -114,7 +114,7 @@ class RenderedAreaMap {
                     mapsByPlane[plane]![y + roomHeight].replaceSubrange(x..<(x + roomWidth), with: " | ".characters)
                 }
                 if room.exits[.up] != nil && room.exits[.down] != nil {
-                    mapsByPlane[plane]![y][x + roomWidth / 2] = "+"
+                    mapsByPlane[plane]![y][x + roomWidth / 2] = "%"
                 } else if room.exits[.up] != nil {
                     mapsByPlane[plane]![y][x + roomWidth / 2] = "^"
                 } else if room.exits[.down] != nil {
