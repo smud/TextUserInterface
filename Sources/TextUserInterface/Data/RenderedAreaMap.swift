@@ -53,17 +53,33 @@ class RenderedAreaMap {
         let from = upperBound(roomCenter - topLeftHalf, AreaMapPosition(0, 0, roomCenter.plane))
         let to = lowerBound(roomCenter + bottomRightHalf, AreaMapPosition(map[0].count, map.count, roomCenter.plane))
         
-        var fragment = String()
-        fragment.reserveCapacity((to.x - from.x + /* for newline */ 1) * (to.y - from.y))
-        
+        var fragmentLines = [String]()
+
+        let playerRoomCenter = playerRoom != nil
+            ? renderedRoomCentersByRoom[playerRoom!]
+            : nil
         for y in from.y..<to.y {
-            fragment += String(map[y][from.x..<to.x])
-            if y != to.y - 1 {
-                fragment += "\n"
+            var line = String()
+            line.reserveCapacity(to.x - from.x)
+            line += String(map[y][from.x..<to.x])
+
+            if let playerRoomCenter = playerRoomCenter, playerRoomCenter.y == y {
+                let leftBracketPosition = playerRoomCenter.x - roomWidth / 2
+                let rightBracketPosition = playerRoomCenter.x + roomWidth / 2
+                if leftBracketPosition >= from.x && rightBracketPosition < to.x {
+                    let index = line.index(line.startIndex, offsetBy: leftBracketPosition - from.x)
+                    line.replaceSubrange(index...index, with: "(")
+                }
+                if rightBracketPosition >= from.x && rightBracketPosition < to.x {
+                    let index = line.index(line.startIndex, offsetBy: rightBracketPosition - from.x)
+                    line.replaceSubrange(index...index, with: ")")
+                }
             }
+
+            fragmentLines.append(line)
         }
         
-        return fragment
+        return fragmentLines.joined(separator: "\n")
     }
     
     func render() {
