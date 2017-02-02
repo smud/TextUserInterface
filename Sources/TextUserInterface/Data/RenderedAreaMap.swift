@@ -68,11 +68,11 @@ class RenderedAreaMap {
                 let rightBracketPosition = playerRoomCenter.x + roomWidth / 2
                 if leftBracketPosition >= from.x && rightBracketPosition < to.x {
                     let index = line.index(line.startIndex, offsetBy: leftBracketPosition - from.x)
-                    line.replaceSubrange(index...index, with: "(")
+                    line.replaceSubrange(index...index, with: "[")
                 }
                 if rightBracketPosition >= from.x && rightBracketPosition < to.x {
                     let index = line.index(line.startIndex, offsetBy: rightBracketPosition - from.x)
-                    line.replaceSubrange(index...index, with: ")")
+                    line.replaceSubrange(index...index, with: "]")
                 }
             }
 
@@ -87,7 +87,8 @@ class RenderedAreaMap {
         
         mapsByPlane.removeAll()
         
-        let fillCharacter: Character = " "
+        let fillCharacter: Character = "."
+        let verticalPassage = "\(fillCharacter)|\(fillCharacter)"
 
         for (plane, range) in areaMap.rangesByPlane {
             let width = (roomWidth + roomSpacingWidth) * (range.to.x - range.from.x + 1)
@@ -106,12 +107,12 @@ class RenderedAreaMap {
             switch element {
             case .room(let room):
                 renderedRoomCentersByRoom[room] = AreaMapPosition(x + roomWidth / 2, y, plane)
-                mapsByPlane[plane]![y].replaceSubrange(x..<(x + roomWidth), with: "[ ]".characters)
+                mapsByPlane[plane]![y].replaceSubrange(x..<(x + roomWidth), with: "( )".characters)
                 if room.exits[.east] != nil {
                     mapsByPlane[plane]![y][x + roomWidth] = "-"
                 }
                 if room.exits[.south] != nil {
-                    mapsByPlane[plane]![y + roomHeight].replaceSubrange(x..<(x + roomWidth), with: " | ".characters)
+                    mapsByPlane[plane]![y + roomHeight].replaceSubrange(x..<(x + roomWidth), with: verticalPassage.characters)
                 }
                 if room.exits[.up] != nil && room.exits[.down] != nil {
                     mapsByPlane[plane]![y][x + roomWidth / 2] = "%"
@@ -126,8 +127,8 @@ class RenderedAreaMap {
                     mapsByPlane[plane]![y].replaceSubrange(x..<(x + roomWidth), with: "---".characters)
                     mapsByPlane[plane]![y][x + roomWidth] = "-"
                 case .y:
-                    mapsByPlane[plane]![y].replaceSubrange(x..<(x + roomWidth), with: " | ".characters)
-                    mapsByPlane[plane]![y + roomHeight].replaceSubrange(x..<(x + roomWidth), with: " | ".characters)
+                    mapsByPlane[plane]![y].replaceSubrange(x..<(x + roomWidth), with: verticalPassage.characters)
+                    mapsByPlane[plane]![y + roomHeight].replaceSubrange(x..<(x + roomWidth), with: verticalPassage.characters)
                 case .plane:
                     mapsByPlane[plane]![y].replaceSubrange(x..<(x + roomWidth), with: " * ".characters)
                 }
