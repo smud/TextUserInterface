@@ -19,12 +19,14 @@ public class CommandContext {
         
         static let areaInstance = GameObjectType(rawValue: 1 << 0)
         static let room = GameObjectType(rawValue: 1 << 1)
+        static let creature = GameObjectType(rawValue: 1 << 2)
     }
     
     enum GameObject {
         case none
         case areaInstance(AreaInstance)
         case room(Room)
+        case creature(Creature)
     }
     
     let args: Scanner
@@ -54,6 +56,14 @@ public class CommandContext {
     func scanArgument(type: GameObjectType, optional: Bool = false) -> GameObject {
         let originalScanLocation = args.scanLocation
         
+        /*
+        if type.contains(.creature) {
+            if case .creature(let creature) = scanCreatureArgument(optional: optional) {
+                return .creature(creature)
+            }
+        }
+        */
+
         if type.contains(.room) {
             if case .room(let room) = scanRoomArgument(optional: optional) {
                 return .room(room)
