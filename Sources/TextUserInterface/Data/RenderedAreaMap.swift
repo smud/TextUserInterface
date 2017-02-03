@@ -26,6 +26,7 @@ class RenderedAreaMap {
     let roomHeight = 1
     let roomSpacingWidth = 1
     let roomSpacingHeight = 1
+    let fillCharacter: Character = "."
 
     init(areaMap: AreaMap) {
         self.areaMap = areaMap
@@ -37,31 +38,45 @@ class RenderedAreaMap {
 
         return fragment(near: room, playerRoom: playerRoom, width: width, height: height)
     }
-    
+
     public func fragment(near room: Room, playerRoom: Room? = nil, width: Int, height: Int) -> String {
         if version == nil || version != areaMap.version {
             render()
         }
-        
+
         guard let roomCenter = renderedRoomCentersByRoom[room] else { return "" }
         guard let map = mapsByPlane[roomCenter.plane] else { return "" }
         guard map.count > 0 && map[0].count > 0 else { return "" }
-        
+
+        let plane = roomCenter.plane
+
         let topLeftHalf = AreaMapPosition(width / 2, height / 2, 0)
         let bottomRightHalf = AreaMapPosition(width, height, 0) - topLeftHalf
 
-        let from = upperBound(roomCenter - topLeftHalf, AreaMapPosition(0, 0, roomCenter.plane))
-        let to = lowerBound(roomCenter + bottomRightHalf, AreaMapPosition(map[0].count, map.count, roomCenter.plane))
-        
+        let from = roomCenter - topLeftHalf
+        let to = roomCenter + bottomRightHalf
+
+        let mapRange = AreaMapRange(from: AreaMapPosition(0, 0, plane), to: AreaMapPosition(map[0].count, map.count, plane))
+        let topLeftPadding = upperBound(mapRange.from - from, AreaMapPosition(0, 0, 0))
+        let bottomRightPadding = upperBound(to - mapRange.to, AreaMapPosition(0, 0, 0))
+
         var fragmentLines = [String]()
 
         let playerRoomCenter = playerRoom != nil
             ? renderedRoomCentersByRoom[playerRoom!]
             : nil
         for y in from.y..<to.y {
+            guard y - from.y >= topLeftPadding.y && to.y - y - 1 >= bottomRightPadding.y else {
+                fragmentLines.append(String(repeating: String(fillCharacter), count: to.x - from.x))
+                continue
+            }
+
             var line = ""
             line.reserveCapacity(to.x - from.x)
-            line += String(map[y][from.x..<to.x])
+
+            line += String(repeating: String(fillCharacter), count: topLeftPadding.x)
+            line += String(map[y][from.x + topLeftPadding.x..<to.x - bottomRightPadding.x])
+            line += String(repeating: String(fillCharacter), count: bottomRightPadding.x)
 
             if let playerRoomCenter = playerRoomCenter, playerRoomCenter.y == y {
                 let leftBracketPosition = playerRoomCenter.x - roomWidth / 2
@@ -81,13 +96,12 @@ class RenderedAreaMap {
         
         return fragmentLines.joined(separator: "\n")
     }
-    
+
     func render() {
         version = areaMap.version
         
         mapsByPlane.removeAll()
         
-        let fillCharacter: Character = "."
         let verticalPassage = "\(fillCharacter)|\(fillCharacter)"
 
         for (plane, range) in areaMap.rangesByPlane {
