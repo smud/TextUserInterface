@@ -24,11 +24,11 @@ public class FightCommands {
             return .showUsage("Kill whom?")
         }
         
-        let victim: Creature
+        //let victim: Creature
         switch context.scanArgument(type: [.creature]) {
         case .creature(let creature):
             context.send("Will attack \(creature.name)")
-            victim = creature
+            //victim = creature
         default:
             return .accept
         }
