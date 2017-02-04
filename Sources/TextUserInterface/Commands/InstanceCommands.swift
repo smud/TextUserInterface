@@ -51,15 +51,12 @@ class InstanceCommands {
         
         let areaInstance: AreaInstance
         if let instanceIndex = link.instance {
-            guard nil == area.instancesByIndex[instanceIndex] else {
+            guard let createdInstance = area.createInstance(withIndex: instanceIndex) else {
                 context.send("Instance \(link) already exists.")
                 return .accept
             }
-            if instanceIndex == area.nextInstanceIndex {
-                area.nextInstanceIndex += 1
-            }
-            areaInstance = AreaInstance(area: area, index: instanceIndex)
-            area.instancesByIndex[instanceIndex] = areaInstance
+
+            areaInstance = createdInstance
         } else {
             // Find next free slot
             areaInstance = area.createInstance()
