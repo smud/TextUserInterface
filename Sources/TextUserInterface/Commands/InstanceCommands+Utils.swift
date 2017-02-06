@@ -17,7 +17,7 @@ extension InstanceCommands {
     func area(link: Link?, context: CommandContext) -> Area? {
         if let link = link {
             if link.isQualified {
-                context.send("Expected area name only: #areaname")
+                context.send("Expected area id only: #areaname")
                 return nil
             }
 
@@ -31,7 +31,7 @@ extension InstanceCommands {
             return v
 
         } else {
-            context.send("No area name specified and you aren't standing in any room.")
+            context.send("No area id specified and you aren't standing in any room.")
             return nil
         }
     }

@@ -31,7 +31,7 @@ class MovementCommands {
         
         let chosenRoom: Room
         
-        switch context.scanArgument(type: [.areaInstance, .room]) {
+        switch context.scanArgument(type: [.room, .areaInstance]) {
         case .room(let room):
             chosenRoom = room
         case .areaInstance(let areaInstance):
@@ -40,7 +40,8 @@ class MovementCommands {
                 return .accept
             }
             chosenRoom = room
-        default: return .accept
+        default:
+            return .accept
         }
         
         context.creature.room = chosenRoom

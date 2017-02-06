@@ -16,6 +16,7 @@ public class TextUserInterface {
     public let router = CommandRouter()
     
     let movementCommands = MovementCommands()
+    let fightCommands = FightCommands()
     let infoCommands = InfoCommands()
     let adminCommands = AdminCommands()
     let instanceCommands = InstanceCommands()
@@ -25,6 +26,7 @@ public class TextUserInterface {
     
     public func registerCommands() {
         movementCommands.register(with: router)
+        fightCommands.register(with: router)
         infoCommands.register(with: router)
         adminCommands.register(with: router)
         instanceCommands.register(with: router)

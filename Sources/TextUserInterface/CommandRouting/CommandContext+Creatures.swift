@@ -1,5 +1,5 @@
 //
-// CommandContext+Rooms.swift
+// CommandContext+Creatures.swift
 //
 // This source file is part of the SMUD open source project
 //
@@ -14,44 +14,47 @@ import Foundation
 import Smud
 
 extension CommandContext {
-    public enum RoomArgument: CustomStringConvertible {
-        case room(Room)
+    public enum CreatureArgument: CustomStringConvertible {
+        case creature(Creature)
         case linkExpected
         case areaDoesNotExist(areaId: String)
         case noAreaId
         case instanceDoesNotExist(instance: Int)
-        case roomDoesNotExist(link: Link)
+        case creatureDoesNotExist(link: Link)
         case areaHasNoInstances
-        case areaInstanceHasNoRooms
-
+//        case areaInstanceHasNoRooms
+        
         public var description: String {
             switch self {
-            case .room(let room): return "Room #\(room.id)"
+            case .creature(let creature): return "Creature \(creature.name)"
             case .linkExpected: return "Link expected."
             case .areaDoesNotExist(let areaId): return "Area #\(areaId) does not exist."
             case .noAreaId: return "Area id not specified and you aren't standing in any room."
             case .instanceDoesNotExist(let instance): return "Instance \(instance) does not exist."
-            case .roomDoesNotExist(let link): return "Room \(link) does not exist."
+            case .creatureDoesNotExist(let link): return "Room \(link) does not exist."
             case .areaHasNoInstances: return "Area has no instances."
-            case .areaInstanceHasNoRooms: return "Area instance has no rooms."
+//            case .areaInstanceHasNoRooms: return "Area instance has no rooms."
             }
         }
     }
     
-    public func scanRoom(optional: Bool = false) -> Room? {
-        let arg = scanRoomArgument(optional: optional)
+    /*
+    public func scanCreature(optional: Bool = false) -> Creature? {
+        let arg = scanCreatureArgument(optional: optional)
         switch arg {
-        case .room(let room): return room
+        case .creature(let creature): return creature
         default:
             send(arg.description)
             return nil
         }
     }
+    */
     
-    public func scanRoomArgument(optional: Bool) -> RoomArgument {
+    /*
+    public func scanCreatureArgument(optional: Bool) -> CreatureArgument {
         if let link = args.scanLink() {
             let areaInstance: AreaInstance
-
+            
             if let areaId = link.parent {
                 guard let area = world.areasById[areaId] else {
                     return .areaDoesNotExist(areaId: areaId)
@@ -74,7 +77,7 @@ extension CommandContext {
                 }
                 areaInstance = v
             }
-
+            
             guard let room = areaInstance.roomsById[link.object] else {
                 return .roomDoesNotExist(link: link)
             }
@@ -91,4 +94,5 @@ extension CommandContext {
             return .room(room)
         }
     }
+    */
 }
