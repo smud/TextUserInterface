@@ -75,7 +75,7 @@ extension CommandContext {
                 areaInstance = v
             }
 
-            guard let room = areaInstance.roomsById[link.object] else {
+            guard let room = areaInstance.roomsById[link.entity] else {
                 return .roomDoesNotExist(link: link)
             }
             return .room(room)

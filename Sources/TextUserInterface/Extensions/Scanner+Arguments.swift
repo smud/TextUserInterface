@@ -34,13 +34,32 @@ extension Scanner {
 
     public func scanLink() -> Link? {
         let scanLocation = self.scanLocation
-        guard let word = scanWord(), word.hasPrefix("#"), let link = Link(word) else {
+        guard let word = scanWord(), let link = Link(word) else {
             self.scanLocation = scanLocation
             return nil
         }
         return link
     }
 
+    public func scanPattern() -> EntityPattern? {
+        let scanLocation = self.scanLocation
+        guard let word = scanWord() else {
+            self.scanLocation = scanLocation
+            return nil
+        }
+        let pattern = EntityPattern(word)
+        return pattern
+    }
+    
+    public func scanSelector() -> EntitySelector? {
+        if let link = scanLink() {
+            return .link(link)
+        } else if let pattern = scanPattern() {
+            return .pattern(pattern)
+        }
+        return nil
+    }
+    
     public func scanRestOfString() -> String? {
         return scanUpTo("")
     }
