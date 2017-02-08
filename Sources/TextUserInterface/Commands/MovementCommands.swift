@@ -25,24 +25,44 @@ class MovementCommands {
     }
 
     func go(context: CommandContext) -> CommandAction {
-        guard context.hasArgs else {
-            return .showUsage("Usage: go #area.room:instance")
+        guard let selector = context.args.scanSelector(),
+            let result = context.creature.findOne(selector: selector, entityTypes: .creature, locations: .world)
+        else {
+            return .showUsage("Usage: go #area.origin | #area.room:instance | #area.mobile:instance | #area.item:instance")
         }
-        
+
         let chosenRoom: Room
-        
-        switch context.scanArgument(type: [.room, .areaInstance]) {
-        case .room(let room):
-            chosenRoom = room
-        case .areaInstance(let areaInstance):
-            guard let room = areaInstance.roomsById.first?.value else {
-                context.send("Area instance #\(areaInstance.area.id):\(areaInstance.index) contains no rooms")
+
+        switch result {
+        case .creature(let creature):
+            guard let room = creature.room else {
+                context.send("This creature is not standing in any room.")
                 return .accept
             }
             chosenRoom = room
         default:
             return .accept
         }
+        
+//
+//        let results = context.creature.find(selector: selector, entityTypes: [.creature], locations: .world)
+//        guard results.count == 1 else {
+//            context.send("Can't go to multiple places at the same time.")
+//            return .accept
+//        }
+//        
+//        switch context.scanArgument(type: [.room, .areaInstance]) {
+//        case .room(let room):
+//            chosenRoom = room
+//        case .areaInstance(let areaInstance):
+//            guard let room = areaInstance.roomsById.first?.value else {
+//                context.send("Area instance #\(areaInstance.area.id):\(areaInstance.index) contains no rooms")
+//                return .accept
+//            }
+//            chosenRoom = room
+//        default:
+//            return .accept
+//        }
         
         context.creature.room = chosenRoom
      

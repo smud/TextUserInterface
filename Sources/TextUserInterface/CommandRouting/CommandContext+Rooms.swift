@@ -52,12 +52,12 @@ extension CommandContext {
         if let link = args.scanLink() {
             let areaInstance: AreaInstance
 
-            if let areaId = link.parent {
+            if let areaId = link.areaId {
                 guard let area = world.areasById[areaId] else {
                     return .areaDoesNotExist(areaId: areaId)
                 }
                 
-                if let instanceIndex = link.instance {
+                if let instanceIndex = link.instanceIndex {
                     guard let v = area.instancesByIndex[instanceIndex] else {
                         return .instanceDoesNotExist(instance: instanceIndex)
                     }
@@ -75,7 +75,7 @@ extension CommandContext {
                 areaInstance = v
             }
 
-            guard let room = areaInstance.roomsById[link.entity] else {
+            guard let room = areaInstance.roomsById[link.entityId] else {
                 return .roomDoesNotExist(link: link)
             }
             return .room(room)
