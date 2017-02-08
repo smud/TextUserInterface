@@ -42,7 +42,7 @@ class InstanceCommands {
             return .showUsage("Usage: instance new #area:instance\n" +
                 "Instance number is optional.")
         }
-        let areaId = link.object
+        let areaId = link.entity
         
         guard let area = context.world.areasById[areaId] else {
             context.send("Area #\(areaId) does not exist.")

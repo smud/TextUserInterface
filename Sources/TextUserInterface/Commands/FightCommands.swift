@@ -20,18 +20,17 @@ public class FightCommands {
     }
     
     func kill(context: CommandContext) -> CommandAction {
-        guard context.hasArgs else {
+        guard let selector = context.args.scanSelector() else {
             return .showUsage("Kill whom?")
         }
         
-        //let victim: Creature
-        switch context.scanArgument(type: [.creature]) {
-        case .creature(let creature):
-            context.send("Will attack \(creature.name)")
-            //victim = creature
-        default:
+        guard let creature = context.creature.findCreature(selector: selector, locations: .room) else {
+            context.send("No one with this name here.")
             return .accept
         }
+        
+        //context.send("Will attack \(creature.name)")
+        context.room?.fight.start(attacker: context.creature, victim: creature)
 
         return .accept
     }

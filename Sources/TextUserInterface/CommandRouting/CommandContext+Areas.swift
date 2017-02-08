@@ -47,7 +47,7 @@ extension CommandContext {
     
     public func scanAreaInstanceArgument(optional: Bool) -> AreaInstanceArgument {
         if let link = args.scanLink() {
-            let areaId = link.object
+            let areaId = link.entity
             guard let area = world.areasById[areaId] else {
                 return .areaDoesNotExist(areaId: areaId)
             }

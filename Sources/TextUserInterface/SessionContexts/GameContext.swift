@@ -53,6 +53,8 @@ final class GameContext: SessionContext {
         if let creature = session.creature {
             
             if let room = creature.room {
+                prompt += areaAndRoom(room: room)
+                prompt += " "
                 prompt += exits(room: room)
             }
             
@@ -60,6 +62,10 @@ final class GameContext: SessionContext {
         
         prompt += "> "
         return prompt
+    }
+    
+    private func areaAndRoom(room: Room) -> String {
+        return "\(room.areaInstance.area.id).\(room.id):\(room.areaInstance.index)"
     }
     
     private func exits(room: Room) -> String {

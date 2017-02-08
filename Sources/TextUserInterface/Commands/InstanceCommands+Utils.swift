@@ -21,7 +21,7 @@ extension InstanceCommands {
                 return nil
             }
 
-            guard let v = context.world.areasById[link.object] else {
+            guard let v = context.world.areasById[link.entity] else {
                 context.send("Area \(link) does not exist.")
                 return nil
             }
