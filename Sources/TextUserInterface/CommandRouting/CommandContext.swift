@@ -52,37 +52,7 @@ public class CommandContext {
         self.session = session
         self.userCommand = userCommand
     }
-    
-    func scanArgument(type: GameObjectType, optional: Bool = false) -> GameObject {
-        let originalScanLocation = args.scanLocation
-        
-        /*
-        if type.contains(.creature) {
-            if case .creature(let creature) = scanCreatureArgument(optional: optional) {
-                return .creature(creature)
-            }
-        }
-        */
-
-        if type.contains(.room) {
-            if case .room(let room) = scanRoomArgument(optional: optional) {
-                return .room(room)
-            }
-        }
-        args.scanLocation = originalScanLocation
-        
-        if type.contains(.areaInstance) {
-            if case .areaInstance(let areaInstance) = scanAreaInstanceArgument(optional: optional) {
-                return .areaInstance(areaInstance)
-            }
-        }
-        args.scanLocation = originalScanLocation
-        
-        send("Nothing found by this name.")
-        
-        args.skipWord()
-        return .none
-    }
+   
     
     func send(_ items: Any..., separator: String = "", terminator: String = "\n") {
         creature.send(items: items, separator: separator, terminator: terminator)
