@@ -25,10 +25,13 @@ class MovementCommands {
     }
 
     func go(context: CommandContext) -> CommandAction {
-        guard let selector = context.args.scanSelector(),
-            let result = context.creature.findOne(selector: selector, entityTypes: .creature, locations: .world)
-        else {
+        guard let selector = context.args.scanSelector() else {
             return .showUsage("Usage: go #area.origin | #area.room:instance | #area.mobile:instance | #area.item:instance")
+        }
+        
+        guard let result = context.creature.findOne(selector: selector, entityTypes: [.creature, .room], locations: .world) else {
+            context.send("No rooms or creatures found.")
+            return .accept
         }
 
         let chosenRoom: Room
@@ -40,29 +43,12 @@ class MovementCommands {
                 return .accept
             }
             chosenRoom = room
+        case .room(let room):
+            chosenRoom = room
         default:
+            assertionFailure()
             return .accept
         }
-        
-//
-//        let results = context.creature.find(selector: selector, entityTypes: [.creature], locations: .world)
-//        guard results.count == 1 else {
-//            context.send("Can't go to multiple places at the same time.")
-//            return .accept
-//        }
-//        
-//        switch context.scanArgument(type: [.room, .areaInstance]) {
-//        case .room(let room):
-//            chosenRoom = room
-//        case .areaInstance(let areaInstance):
-//            guard let room = areaInstance.roomsById.first?.value else {
-//                context.send("Area instance #\(areaInstance.area.id):\(areaInstance.index) contains no rooms")
-//                return .accept
-//            }
-//            chosenRoom = room
-//        default:
-//            return .accept
-//        }
         
         context.creature.room = chosenRoom
      
