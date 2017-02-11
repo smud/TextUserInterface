@@ -52,9 +52,7 @@ class MovementCommands {
         
         context.creature.room = chosenRoom
      
-        let area = chosenRoom.areaInstance.area
-        
-        context.send("Relocated to #\(area.id).\(chosenRoom.id):\(chosenRoom.areaInstance.index)")
+        context.send("Relocated to \(Link(room: chosenRoom)))")
         return .accept
     }
 

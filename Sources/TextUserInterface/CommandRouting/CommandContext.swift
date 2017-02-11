@@ -52,8 +52,7 @@ public class CommandContext {
         self.session = session
         self.userCommand = userCommand
     }
-   
-    
+
     func send(_ items: Any..., separator: String = "", terminator: String = "\n") {
         creature.send(items: items, separator: separator, terminator: terminator)
     }
