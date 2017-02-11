@@ -52,10 +52,9 @@ extension Scanner {
     }
     
     public func scanSelector() -> EntitySelector? {
-        if let link = scanLink() {
-            return .link(link)
-        } else if let pattern = scanPattern() {
-            return .pattern(pattern)
+        // FIXME: EntitySelector should be constructible from scanner. Workaround:
+        if let word = scanWord() {
+            return EntitySelector(word)
         }
         return nil
     }

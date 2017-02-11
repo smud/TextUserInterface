@@ -30,6 +30,7 @@ class AdminCommands {
         router["dig west"] = { return self.dig(.west, $0) }
         router["dig up"] = { return self.dig(.up, $0) }
         router["dig down"] = { return self.dig(.down, $0) }
+        router["dig"] = dig
     }
     
     func areaList(context: CommandContext) -> CommandAction {
@@ -175,5 +176,21 @@ class AdminCommands {
         context.creature.look()
 
         return .accept
+    }
+
+    func dig(context: CommandContext) -> CommandAction {
+        var result = ""
+        if let subcommand = context.args.scanWord() {
+            result += "Unknown subcommand: \(subcommand)\n"
+        }
+
+        result += "Available subcommands:\n"
+        result += "    north <room id>\n";
+        result += "    south <room id>\n";
+        result += "    east <room id>\n";
+        result += "    west <room id>\n";
+        result += "    up <room id>\n";
+        result += "    down <room id>";
+        return .showUsage(result)
     }
 }

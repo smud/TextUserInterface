@@ -38,11 +38,11 @@ class InstanceCommands {
     }
     
     func instanceNew(context: CommandContext) throws -> CommandAction {
-        guard let link = context.args.scanLink(), link.parent == nil else {
+        guard let link = context.args.scanLink(), link.areaId == nil else {
             return .showUsage("Usage: instance new #area:instance\n" +
                 "Instance number is optional.")
         }
-        let areaId = link.entity
+        let areaId = link.entityId
         
         guard let area = context.world.areasById[areaId] else {
             context.send("Area #\(areaId) does not exist.")
@@ -50,7 +50,7 @@ class InstanceCommands {
         }
         
         let areaInstance: AreaInstance
-        if let instanceIndex = link.instance {
+        if let instanceIndex = link.instanceIndex {
             guard let createdInstance = area.createInstance(withIndex: instanceIndex, mode: .forPlaying) else {
                 context.send("Instance \(link) already exists.")
                 return .accept
@@ -72,7 +72,9 @@ class InstanceCommands {
         if let subcommand = context.args.scanWord() {
             result += "Unknown subcommand: \(subcommand)\n"
         }
-        result += "Available subcommands: list new"
+        result += "Available subcommands: \n"
+        result += "    list\n"
+        result += "    new\n"
         return .showUsage(result)
     }
 }

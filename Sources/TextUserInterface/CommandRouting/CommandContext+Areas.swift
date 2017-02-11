@@ -47,12 +47,12 @@ extension CommandContext {
     
     public func scanAreaInstanceArgument(optional: Bool) -> AreaInstanceArgument {
         if let link = args.scanLink() {
-            let areaId = link.entity
+            let areaId = link.entityId
             guard let area = world.areasById[areaId] else {
                 return .areaDoesNotExist(areaId: areaId)
             }
             
-            if let instanceIndex = link.instance {
+            if let instanceIndex = link.instanceIndex {
                 guard let areaInstance = area.instancesByIndex[instanceIndex] else {
                     return .instanceDoesNotExist(instance: instanceIndex)
                 }
