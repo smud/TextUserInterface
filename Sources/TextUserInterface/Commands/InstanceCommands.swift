@@ -51,7 +51,7 @@ class InstanceCommands {
         
         let areaInstance: AreaInstance
         if let instanceIndex = link.instance {
-            guard let createdInstance = area.createInstance(withIndex: instanceIndex) else {
+            guard let createdInstance = area.createInstance(withIndex: instanceIndex, mode: .forPlaying) else {
                 context.send("Instance \(link) already exists.")
                 return .accept
             }
@@ -59,7 +59,7 @@ class InstanceCommands {
             areaInstance = createdInstance
         } else {
             // Find next free slot
-            areaInstance = area.createInstance()
+            areaInstance = area.createInstance(mode: .forPlaying)
         }
         
         context.send("Instance #\(areaId):\(areaInstance.index) created.")

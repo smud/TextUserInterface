@@ -78,7 +78,7 @@ public class CommandContext {
         }
         args.scanLocation = originalScanLocation
         
-        send("Nothing found by this name.")
+        //send("Nothing found by this name.")
         
         args.skipWord()
         return .none
