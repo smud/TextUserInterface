@@ -17,7 +17,8 @@ import Smud
 class AdminCommands {
     func register(with router: CommandRouter) {
         router["area list"] = areaList
-        router["area edit"] = areaEdit;
+        router["area edit"] = areaEdit
+        router["area save"] = areaSave
         router["area"] = area
         
         router["room list"] = roomList
@@ -44,7 +45,7 @@ class AdminCommands {
 
     func areaEdit(context: CommandContext) -> CommandAction {
         guard let currentRoom = context.creature.room else {
-            context.send("You are not standing in any area")
+            context.send("You are not standing in any area.")
             return .accept
         }
 
@@ -68,6 +69,16 @@ class AdminCommands {
 
         context.send("Relocated to \(Link(room: currentRoom)) (editing mode)")
         context.creature.look()
+        return .accept
+    }
+    
+    func areaSave(context: CommandContext) -> CommandAction {
+        guard let area = context.area else {
+            context.send("You aren't standing in any area.")
+            return .accept
+        }
+        area.scheduleForSaving()
+        context.send("Area #\(area.id) scheduled for saving.")
         return .accept
     }
 
@@ -102,21 +113,21 @@ class AdminCommands {
             room = resolvedRoom
         } else {
             guard let currentRoom = context.creature.room else {
-                context.send("You are not standing in any room")
+                context.send("You are not standing in any room.")
                 return .accept
             }
 
             if let directionWord = context.args.scanWord() {
                 guard let direction = Direction(rawValue: directionWord) else {
-                    context.send("Expected link or direction")
+                    context.send("Expected link or direction.")
                     return .accept
                 }
                 guard let neighborLink = currentRoom.exits[direction] else {
-                    context.send("There's no room in that direction from you")
+                    context.send("There's no room in that direction from you.")
                     return .accept
                 }
                 guard let neighborRoom = currentRoom.resolveLink(link: neighborLink) else {
-                    context.send("Can't find neighbor room")
+                    context.send("Can't find neighbor room.")
                     return .accept
                 }
 
@@ -153,22 +164,22 @@ class AdminCommands {
 
     func dig(direction: Direction, context: CommandContext) -> CommandAction {
         guard let currentRoom = context.creature.room else {
-            context.send("You are not standing in any room, there's nowhere to dig")
+            context.send("You are not standing in any room, there's nowhere to dig.")
             return .accept
         }
 
         guard currentRoom.areaInstance.resetMode == .forEditing else {
-            context.send("Please enter \"area edit\" to start editing")
+            context.send("Please enter \"area edit\" to start editing.")
             return .accept
         }
 
         guard let roomId = context.args.scanWord() else {
-            context.send("Expected room identifier")
+            context.send("Expected room identifier.")
             return .accept
         }
 
         guard let destinationRoom = currentRoom.areaInstance.digRoom(from: currentRoom, direction: direction, id: roomId) else {
-            context.send("Failed to dig room")
+            context.send("Failed to dig room.")
             return .accept
         }
 

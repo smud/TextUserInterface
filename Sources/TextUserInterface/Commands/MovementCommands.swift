@@ -52,7 +52,7 @@ class MovementCommands {
         
         context.creature.room = chosenRoom
      
-        context.send("Relocated to \(Link(room: chosenRoom)))")
+        context.send("Relocated to \(Link(room: chosenRoom))")
         return .accept
     }
 
