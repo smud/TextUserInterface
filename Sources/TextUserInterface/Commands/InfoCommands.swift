@@ -43,7 +43,7 @@ class InfoCommands {
             return .accept
         }
         
-        print(map.fragment(near: room, width: 100, height: 100))
+        print(map.fragment(near: room, width: 100, height: 100, pad: false))
             
         return .accept
     }

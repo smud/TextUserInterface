@@ -39,7 +39,7 @@ class RenderedAreaMap {
         return fragment(near: room, playerRoom: playerRoom, width: width, height: height)
     }
 
-    public func fragment(near room: Room, playerRoom: Room? = nil, width: Int, height: Int) -> String {
+    public func fragment(near room: Room, playerRoom: Room? = nil, width: Int, height: Int, pad: Bool = true) -> String {
         if version == nil || version != areaMap.version {
             render()
         }
@@ -49,14 +49,18 @@ class RenderedAreaMap {
         guard map.count > 0 && map[0].count > 0 else { return "" }
 
         let plane = roomCenter.plane
+        let mapRange = AreaMapRange(from: AreaMapPosition(0, 0, plane), to: AreaMapPosition(map[0].count, map.count, plane))
 
         let topLeftHalf = AreaMapPosition(width / 2, height / 2, 0)
         let bottomRightHalf = AreaMapPosition(width, height, 0) - topLeftHalf
 
-        let from = roomCenter - topLeftHalf
-        let to = roomCenter + bottomRightHalf
+        let from = pad
+            ? roomCenter - topLeftHalf
+            : upperBound(roomCenter - topLeftHalf, mapRange.from)
+        let to = pad
+            ? roomCenter + bottomRightHalf
+            : lowerBound(roomCenter + bottomRightHalf, mapRange.to)
 
-        let mapRange = AreaMapRange(from: AreaMapPosition(0, 0, plane), to: AreaMapPosition(map[0].count, map.count, plane))
         let topLeftPadding = upperBound(mapRange.from - from, AreaMapPosition(0, 0, 0))
         let bottomRightPadding = upperBound(to - mapRange.to, AreaMapPosition(0, 0, 0))
 
@@ -103,11 +107,16 @@ class RenderedAreaMap {
         mapsByPlane.removeAll()
         
         let verticalPassage = "\(fillCharacter)|\(fillCharacter)"
+        let horizontalPadding = 1
+        let verticalPadding = 1
 
         for (plane, range) in areaMap.rangesByPlane {
-            let width = (roomWidth + roomSpacingWidth) * (range.to.x - range.from.x + 1)
-            let height = roomHeight * (range.to.y - range.from.y + 1) + roomSpacingHeight * (range.to.y - range.from.y)
-            mapsByPlane[plane] = [[Character]](repeating: [Character](repeating: fillCharacter, count: width), count: height)
+            let logicalWidth = range.size(axis: .x)
+            let logicalHeight = range.size(axis: .y)
+            let width = roomWidth * logicalWidth + roomSpacingWidth * (logicalWidth - 1)
+            let height = roomHeight * logicalHeight + roomSpacingHeight * (logicalHeight - 1)
+            let renderedEmptyRow = [Character](repeating: fillCharacter, count: width + 2 * horizontalPadding)
+            mapsByPlane[plane] = [[Character]](repeating: renderedEmptyRow, count: height + 2 * verticalPadding)
         }
         
         for (position, element) in areaMap.mapElementsByPosition {
@@ -115,8 +124,8 @@ class RenderedAreaMap {
             guard mapsByPlane[plane] != nil else { continue }
             guard let range = areaMap.rangesByPlane[plane] else { continue }
             
-            let x = (roomWidth + roomSpacingWidth) * (position.x - range.from.x)
-            let y = (roomHeight + roomSpacingHeight) * (position.y - range.from.y)
+            let x = horizontalPadding + (roomWidth + roomSpacingWidth) * (position.x - range.from.x)
+            let y = verticalPadding + (roomHeight + roomSpacingHeight) * (position.y - range.from.y)
             
             switch element {
             case .room(let room):
