@@ -17,6 +17,7 @@ import Smud
 class AdminCommands {
     func register(with router: CommandRouter) {
         router["area list"] = areaList
+        router["area build"] = areaBuild
         router["area edit"] = areaEdit
         router["area save"] = areaSave
         router["area"] = area
@@ -43,7 +44,9 @@ class AdminCommands {
         return .accept
     }
 
-    func areaEdit(context: CommandContext) -> CommandAction {
+    func areaBuild(context: CommandContext) -> CommandAction {
+        guard let player = context.creature as? Player else { return .next }
+
         guard let currentRoom = context.creature.room else {
             context.send("You are not standing in any area.")
             return .accept
@@ -56,7 +59,7 @@ class AdminCommands {
         if let previousRoom = newInstance.roomsById[currentRoom.id] {
             room = previousRoom
         } else {
-            context.send("Can't find you current room in newly created instance. Probably it has been removed. Relocating to area's default room")
+            context.send("Can't find your current room in newly created instance. Probably it has been removed. Relocating to area's default room")
             guard let defaultRoom = newInstance.roomsById.values.first else {
                 context.send("Area \(newInstance.area.id) is empty")
                 newInstance.area.removeInstance(newInstance)
@@ -65,9 +68,31 @@ class AdminCommands {
             room = defaultRoom
         }
 
-        context.creature.room = room
+        player.room = room
+        player.editedInstances.insert(newInstance)
 
-        context.send("Relocated to \(Link(room: currentRoom)) (editing mode)")
+        context.send("Relocated to \(Link(room: room)) (editing mode).")
+        context.creature.look()
+        return .accept
+    }
+
+    func areaEdit(context: CommandContext) -> CommandAction {
+        guard let player = context.creature as? Player else { return .next }
+
+        guard let room = player.room else {
+            context.send("You are not standing in any area.")
+            return .accept
+        }
+
+        let instance = room.areaInstance
+        guard !player.editedInstances.contains(instance) else {
+            context.send("Already editing #\(instance.area.id):\(instance.index).")
+            return .accept
+        }
+
+        player.editedInstances.insert(instance)
+
+        context.send("Enabled editing on #\(instance.area.id):\(instance.index).")
         context.creature.look()
         return .accept
     }
@@ -163,13 +188,15 @@ class AdminCommands {
     }
 
     func dig(direction: Direction, context: CommandContext) -> CommandAction {
+        guard let player = context.creature as? Player else { return .next }
+
         guard let currentRoom = context.creature.room else {
             context.send("You are not standing in any room, there's nowhere to dig.")
             return .accept
         }
 
-        guard currentRoom.areaInstance.resetMode == .forEditing else {
-            context.send("Please enter \"area edit\" to start editing.")
+        guard player.editedInstances.contains(currentRoom.areaInstance) else {
+            context.send("Editing is disabled on this area instance. Consider 'area edit' and 'area build' commands to enter editing mode.")
             return .accept
         }
 
