@@ -16,7 +16,8 @@ import Smud
 class InstanceCommands {
     func register(with router: CommandRouter) {
         router["instance list"] = instanceList
-        router["instance new"] = instanceNew
+        router["instance new edit"] = { try self.instanceNew(mode: .forEditing, context: $0) }
+        router["instance new"] = { try self.instanceNew(mode: .forPlaying, context: $0) }
         router["instance"] = instance
     }
 
@@ -37,33 +38,26 @@ class InstanceCommands {
         return .accept
     }
     
-    func instanceNew(context: CommandContext) throws -> CommandAction {
+    func instanceNew(mode: AreaInstance.ResetMode, context: CommandContext) throws -> CommandAction {
         guard let link = context.args.scanLink(), link.areaId == nil else {
             return .showUsage("Usage: instance new #area:instance\n" +
                 "Instance number is optional.")
         }
         let areaId = link.entityId
-        
+
         guard let area = context.world.areasById[areaId] else {
             context.send("Area #\(areaId) does not exist.")
             return .accept
         }
-        
-        let areaInstance: AreaInstance
-        if let instanceIndex = link.instanceIndex {
-            guard let createdInstance = area.createInstance(withIndex: instanceIndex, mode: .forPlaying) else {
-                context.send("Instance \(link) already exists.")
-                return .accept
-            }
 
-            areaInstance = createdInstance
-        } else {
-            // Find next free slot
-            areaInstance = area.createInstance(mode: .forPlaying)
+        switch area.createInstance(withIndex: link.instanceIndex, mode: mode) {
+        case .ok(let instance):
+            instance.buildMap()
+            context.send("Instance #\(areaId):\(instance.index) created.")
+        case .instanceAlreadyExists(_):
+            context.send("Instance \(link) already exists.")
         }
-        
-        context.send("Instance #\(areaId):\(areaInstance.index) created.")
-        
+
         return .accept
     }
     
